@@ -10,7 +10,8 @@ Download and open in Netbean 8.xx IDE
 * NetBean IDE
 * Connector/J  https://dev.mysql.com/downloads/connector/j/
 * JDBC CONNECTOR
-
+* MYSQL Database Server https://dev.mysql.com/downloads/mysql/
+* XAMPP Server https://www.apachefriends.org/index.html
 
 ```
 
@@ -22,79 +23,92 @@ Download and open in Netbean 8.xx IDE
 
 //////////  IMPORT /////////////////////
 
-import com.github.sarxos.webcam.Webcam;
-import com.github.sarxos.webcam.WebcamPanel;
-import com.github.sarxos.webcam.WebcamResolution;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.HeadlessException;
-import java.io.File;
-import java.io.IOException;
-import javax.imageio.ImageIO;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
+//////Others in JFrame //////
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.ArrayList;
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 
-/////////// IN MAIN CLASS/////////
+/////////// Database Connection in DBConnection.Java/////////
 
-public class NewJFrame extends javax.swing.JFrame {
-    private final Dimension ds=new Dimension(450,360);
-    private final Dimension cs= WebcamResolution.VGA.getSize();
-    private final Webcam wCam=Webcam.getDefault();
-    private final  WebcamPanel wCamPanel=new WebcamPanel(wCam,ds,false);  
+private Connection DBConnection;
+    public Connection connect(){
     
-////// AFTER INIT COMPONENT ////////////
-
-    public NewJFrame() {
-        initComponents();
-        wCam.setViewSize(cs);
-        wCamPanel.setFillArea(true);
-        panelCam.setLayout(new FlowLayout());
-        panelCam.add(wCamPanel);      
- }
- 
- //////////////// AT CAPTURING EVENT ///////////////// 
- 
-        Thread t = new Thread(){
-        @Override        
-        public void run(){
-        wCamPanel.start();
-    }
-    };
-    t.setDaemon(true);
-    t.start();
+try{
+            Class.forName("com.mysql.jdbc.Driver");
+            System.out.println("Driver Success");            
+        }
+ catch(ClassNotFoundException cnfe){
+            System.out.println("Driver not found" + cnfe);
+        }  
+        
+        String url="jdbc:mysql://localhost:3306/wbeducar_java";        
+try{
+          DBConnection=DriverManager.getConnection(url,"root","YOUR PASSWORD");
+          System.out.println("Database Connected");
+        }
+catch(SQLException se){
+          System.out.println("Database Not Found");  
+        }
+        return DBConnection;       
+ }     
     
- /////////////////// SAVING EVENT ///////////
+////// CALL CONNECTION IN OTHER FORM////////////
+ Connection conn=new DBConnection().connect();
  
-  try{
-          File file= new File(String.format("capture-%d.jpg",System.currentTimeMillis())) ;
-        ImageIO.write(wCam.getImage(), "JPG", file);
-        JOptionPane.showMessageDialog(this, "image saved on :\n" + file.getAbsolutePath(),"CamCap",1);
-        }
-        catch(HeadlessException | IOException e){
-            JOptionPane.showMessageDialog(this,"Image Not Saved :/n"+e.getMessage(),"Cam",0);
-            
-        }
+ //////////////// CHECK SELECT QUERY ON BUTTON CLICK EVENT  ///////////////// 
+  String sql="Select * FROM user where username=? AND password=?";
+      try{
+          PreparedStatement ps=conn.prepareStatement(sql);
+          ps.setString(1,txtUser.getText());
+          ps.setString(2,txtPass.getText());
+          
+          ResultSet rs=ps.executeQuery();
+          
+         if(rs.next()){
+             this.dispose();
+              MainMenu mm = new MainMenu();
+             mm.show();
+         }
+         else {
+             JOptionPane.showMessageDialog(null,"User Credential invalid");
+         }
+          
+      }
+      catch(HeadlessException | SQLException e){
+       JOptionPane.showMessageDialog(null,"User Credential invalid" + e);   
+      }
+    
+ /////////////////// EXIT FROM APPLICATION ///////////
+ System.exit(0);
  
 ```
 
 ### Installing
 
-Clone git and open dist folder and run JavaApplication2.jar in windows environment
+Clone git and open dist folder and run javaapp.jar in windows environment
 
 
 ## Built With
 
-* [sarxos Generic Webcam Java API](https://github.com/sarxos/webcam-capture) - The webcam generic Library
 * [Netbeans](https://netbeans.org/downloads/) - Netbeans IDE
 * [Java SDK ](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html) - as per your OS
 
 ## Contributing & Issue
 
-Please read [CONTRIBUTING.md](https://github.com/dodobasu/java_swing_webcam/issues) for details on our code of conduct, and the process for submitting pull requests to us.
+Please read [CONTRIBUTING.md](https://github.com/dodobasu/java_swing_mysql_crud/issues) for details on our code of conduct, and the process for submitting pull requests to us.
 
 
 ## Authors
 
-* **Prativas Basu** - *Initial work* - [Bartosz Firyn](https://github.com/sarxos)
+* **Prativas Basu** 
 
 
 ## License
