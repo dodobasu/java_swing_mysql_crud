@@ -15,11 +15,21 @@ Download and open in Netbean 8.xx IDE
 
 ```
 
-//////////CREATE DATABASE ////////////
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel panelCam;
+//////////CREATE DATABASE AND TABLE ////////////
+CREATE DATABASE `wbeducar_java`;--
+
+CREATE TABLE IF NOT EXISTS `user` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `username` varchar(25) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `password` varchar(30) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `user_status` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `entry` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id` (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=12 ;
+
+INSERT INTO `user` (`id`, `username`, `password`, `user_status`, `entry`) VALUES
+(1, 'admin', 'admin', 'Active', '2018-02-14 22:22:29');
 
 //////////  IMPORT /////////////////////
 
